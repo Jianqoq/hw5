@@ -337,7 +337,7 @@ int main(int argc, char **argv) {
   memcpy(root->board, initial_board, sizeof(int) * k * k);
   root->parent = NULL;
   root->move = -1;
-  set2 = init(10000000);
+  set2 = init(100000);
   queue = init_queue(100000);
   goal = (int *)malloc(sizeof(int) * k * k);
   for (int i = 1; i < k * k; i++) {
@@ -352,6 +352,22 @@ int main(int argc, char **argv) {
     fprintf(fp_out, "%s\n", moves);
   else
     fprintf(fp_out, "no solution\n");
+  for (int i = 0; i < set2->size; i++) {
+    if (set2->Entries[i] != NULL) {
+      Entry *entry = set2->Entries[i];
+      if (entry->next != NULL) {
+        Entry *next = entry->next;
+        while (next != NULL) {
+          Entry *tmp = next;
+          next = next->next;
+          free(tmp);
+        }
+      }
+    }
+  }
+  free(set2->Entries);
+  free(set2);
+  free(queue->node);
   // if it is solvable, then use something as follows:
   // probably within a loop, or however you stored proper moves, print them one
   // by one by leaving a space between moves, as below
