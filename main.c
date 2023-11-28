@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define UP 0
 #define DOWN 1
@@ -10,6 +11,8 @@
 
 #define BUFSIZE 256
 #define CONSTANT 128
+
+double begin = 0;
 
 typedef struct Entry {
   int *arr;
@@ -126,8 +129,7 @@ int arr_equal(int *arr1, int *arr2, int size) {
 int is_member(HashSet *set, int *arr, int size) {
   size_t index = hash(arr, size, set->size);
   if (set->Entries[index] != NULL) {
-    if (set->Entries[index]->arr != NULL &&
-        arr_equal(arr, set->Entries[index]->arr, size)) {
+    if (arr_equal(arr, set->Entries[index]->arr, size)) {
       return 1;
     } else {
       Entry *entry = set->Entries[index]->next;
@@ -145,8 +147,6 @@ int is_member(HashSet *set, int *arr, int size) {
 void printBoard(int *board, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
-      // printf("[%d: %d]", board[i * size + j]->number, board[i * size +
-      // j]->visited);
       printf("%d ", board[i * size + j]);
     }
     printf("\n");
@@ -160,7 +160,6 @@ void swap(int *board, int i, int j) {
   board[j] = temp;
 }
 
-HashSet *set = NULL;
 HashSet *set2 = NULL;
 Queue *queue = NULL;
 int *goal = NULL;
@@ -243,7 +242,6 @@ Node **yield_node(Node *node) {
   return NULL;
 }
 
-int number = 0;
 char *build_graph(Node *root) {
   enqueue(queue, root);
   insert(set2, root->board, root->size * root->size);
@@ -342,9 +340,8 @@ int main(int argc, char **argv) {
   memcpy(root->board, initial_board, sizeof(int) * k * k);
   root->parent = NULL;
   root->move = -1;
-  set = init(200000);
-  set2 = init(200000);
-  queue = init_queue(200000);
+  set2 = init(100000);
+  queue = init_queue(100000);
   goal = (int *)malloc(sizeof(int) * k * k);
   for (int i = 1; i < k * k; i++) {
     goal[i - 1] = i;
