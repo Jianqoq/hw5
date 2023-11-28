@@ -43,7 +43,7 @@ typedef struct Queue {
 uint64_t encodepuzzle(int *arr, int arr_len) {
   uint64_t encoded = 0;
   for (int i = 0; i < arr_len; i++) {
-	encoded |= (uint64_t)arr[i] << (60 - 4 * i);
+    encoded |= (uint64_t)arr[i] << (60 - 4 * i);
   }
   return encoded;
 }
@@ -88,9 +88,7 @@ Queue *init_queue(int size) {
   return queue;
 }
 
-size_t hash(uint64_t hashed, size_t size) {
-  return hashed % size;
-}
+size_t hash(uint64_t hashed, size_t size) { return hashed % size; }
 
 HashSet *init(size_t size) {
   Entry **entries = (Entry **)malloc(sizeof(Entry *) * (size + 1));
@@ -186,7 +184,7 @@ Node **yield_node(Node *node) {
           swap(tmp0->board, row * node->size + column,
                (row - 1) * node->size + column);
           tmp0->parent = node;
-		  tmp0->hashed = encodepuzzle(tmp0->board, tmp0->size * tmp0->size);
+          tmp0->hashed = encodepuzzle(tmp0->board, tmp0->size * tmp0->size);
           nodes[0] = tmp0;
         }
         // Down
@@ -202,7 +200,7 @@ Node **yield_node(Node *node) {
           tmp1->parent = node;
           swap(tmp1->board, row * node->size + column,
                (row + 1) * node->size + column);
-			   tmp1->hashed = encodepuzzle(tmp1->board, tmp1->size * tmp1->size);
+          tmp1->hashed = encodepuzzle(tmp1->board, tmp1->size * tmp1->size);
           nodes[1] = tmp1;
         }
         // Left
@@ -218,7 +216,7 @@ Node **yield_node(Node *node) {
           swap(tmp2->board, row * node->size + column,
                row * node->size + column - 1);
           tmp2->parent = node;
-		  tmp2->hashed = encodepuzzle(tmp2->board, tmp2->size * tmp2->size);
+          tmp2->hashed = encodepuzzle(tmp2->board, tmp2->size * tmp2->size);
           nodes[2] = tmp2;
         }
         // Right
@@ -234,7 +232,7 @@ Node **yield_node(Node *node) {
           swap(tmp3->board, row * node->size + column,
                row * node->size + column + 1);
           tmp3->parent = node;
-		  tmp3->hashed = encodepuzzle(tmp3->board, tmp3->size * tmp3->size);
+          tmp3->hashed = encodepuzzle(tmp3->board, tmp3->size * tmp3->size);
           nodes[3] = tmp3;
         }
         if (nodes[0] == NULL && nodes[1] == NULL && nodes[2] == NULL &&
@@ -355,7 +353,7 @@ int main(int argc, char **argv) {
     goal[i - 1] = i;
   }
   goal[k * k - 1] = 0;
-	  goal_hashed = encodepuzzle(goal, k * k);
+  goal_hashed = encodepuzzle(goal, k * k);
   double begin = clock();
   char *moves = build_graph(root);
   double end = clock();
