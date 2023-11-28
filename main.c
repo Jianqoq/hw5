@@ -15,12 +15,12 @@
 double begin = 0;
 
 typedef struct Entry {
-  int *arr;
+  unsigned char *arr;
   struct Entry *next;
 } Entry;
 
 typedef struct Node {
-  int *board;
+  unsigned char *board;
   int size;
   struct Node *parent;
   int move;
@@ -78,7 +78,7 @@ Queue *init_queue(int size) {
   return queue;
 }
 
-size_t hash(int *arr, int arr_len, size_t size) {
+size_t hash(unsigned char *arr, int arr_len, size_t size) {
   size_t hash = 0;
 
   for (size_t i = 0; i < arr_len; i++) {
@@ -98,7 +98,7 @@ HashSet *init(size_t size) {
   return set;
 }
 
-void insert(HashSet *set, int *arr, int size) {
+void insert(HashSet *set, unsigned char *arr, int size) {
   size_t index = hash(arr, size, set->size);
   if (set->Entries[index] != NULL) {
     Entry *entry = (Entry *)malloc(sizeof(Entry));
@@ -117,7 +117,7 @@ void insert(HashSet *set, int *arr, int size) {
   }
 }
 
-int arr_equal(int *arr1, int *arr2, int size) {
+int arr_equal(unsigned char *arr1, unsigned char *arr2, int size) {
   for (int i = 0; i < size; i++) {
     if (arr1[i] != arr2[i])
       return 0;
@@ -125,7 +125,7 @@ int arr_equal(int *arr1, int *arr2, int size) {
   return 1;
 }
 
-int is_member(HashSet *set, int *arr, int size) {
+int is_member(HashSet *set, unsigned char *arr, int size) {
   size_t index = hash(arr, size, set->size);
   if (set->Entries[index] != NULL) {
     if (arr_equal(arr, set->Entries[index]->arr, size)) {
@@ -153,8 +153,8 @@ void printBoard(int *board, int size) {
   printf("\n");
 }
 
-void swap(int *board, int i, int j) {
-  int temp = board[i];
+void swap(unsigned char *board, int i, int j) {
+  unsigned char temp = board[i];
   board[i] = board[j];
   board[j] = temp;
 }
@@ -162,7 +162,7 @@ void swap(int *board, int i, int j) {
 HashSet *set2 = NULL;
 HashSet *set1 = NULL;
 Queue *queue = NULL;
-int *goal = NULL;
+unsigned char *goal = NULL;
 
 Node **yield_node(Node *node) {
   Node **nodes = (Node **)malloc(sizeof(Node *) * 4);
@@ -176,9 +176,9 @@ Node **yield_node(Node *node) {
           Node *tmp0 = (Node *)malloc(sizeof(Node));
           tmp0->move = node->board[(row - 1) * node->size + column];
           tmp0->size = node->size;
-          tmp0->board = (int *)malloc(sizeof(int) * node->size * node->size);
+          tmp0->board = (unsigned char *)malloc(sizeof(unsigned char) * node->size * node->size);
           memcpy(tmp0->board, node->board,
-                 sizeof(int) * node->size * node->size);
+                 sizeof(unsigned char) * node->size * node->size);
           swap(tmp0->board, row * node->size + column,
                (row - 1) * node->size + column);
           tmp0->parent = node;
@@ -191,9 +191,9 @@ Node **yield_node(Node *node) {
           Node *tmp1 = (Node *)malloc(sizeof(Node));
           tmp1->move = node->board[(row + 1) * node->size + column];
           tmp1->size = node->size;
-          tmp1->board = (int *)malloc(sizeof(int) * node->size * node->size);
+          tmp1->board = (unsigned char *)malloc(sizeof(unsigned char) * node->size * node->size);
           memcpy(tmp1->board, node->board,
-                 sizeof(int) * node->size * node->size);
+                 sizeof(unsigned char) * node->size * node->size);
           tmp1->parent = node;
           swap(tmp1->board, row * node->size + column,
                (row + 1) * node->size + column);
@@ -206,9 +206,9 @@ Node **yield_node(Node *node) {
           Node *tmp2 = (Node *)malloc(sizeof(Node));
           tmp2->move = node->board[row * node->size + column - 1];
           tmp2->size = node->size;
-          tmp2->board = (int *)malloc(sizeof(int) * node->size * node->size);
+          tmp2->board = (unsigned char *)malloc(sizeof(unsigned char) * node->size * node->size);
           memcpy(tmp2->board, node->board,
-                 sizeof(int) * node->size * node->size);
+                 sizeof(unsigned char) * node->size * node->size);
           swap(tmp2->board, row * node->size + column,
                row * node->size + column - 1);
           tmp2->parent = node;
@@ -221,9 +221,9 @@ Node **yield_node(Node *node) {
           Node *tmp3 = (Node *)malloc(sizeof(Node));
           tmp3->move = node->board[row * node->size + column + 1];
           tmp3->size = node->size;
-          tmp3->board = (int *)malloc(sizeof(int) * node->size * node->size);
+          tmp3->board = (unsigned char *)malloc(sizeof(unsigned char) * node->size * node->size);
           memcpy(tmp3->board, node->board,
-                 sizeof(int) * node->size * node->size);
+                 sizeof(unsigned char) * node->size * node->size);
           swap(tmp3->board, row * node->size + column,
                row * node->size + column + 1);
           tmp3->parent = node;
@@ -333,14 +333,14 @@ int main(int argc, char **argv) {
   ////////////////////
   Node *root = (Node *)malloc(sizeof(Node));
   root->size = k;
-  root->board = (int *)malloc(sizeof(int) * k * k);
-  memcpy(root->board, initial_board, sizeof(int) * k * k);
+  root->board = (unsigned char *)malloc(sizeof(unsigned char) * k * k);
+  memcpy(root->board, initial_board, sizeof(unsigned char) * k * k);
   root->parent = NULL;
   root->move = -1;
   set2 = init(100000);
   queue = init_queue(100000);
-  goal = (int *)malloc(sizeof(int) * k * k);
-  for (int i = 1; i < k * k; i++) {
+  goal = (unsigned char *)malloc(sizeof(unsigned char) * k * k);
+  for (unsigned char i = 1; i < k * k; i++) {
     goal[i - 1] = i;
   }
   goal[k * k - 1] = 0;
