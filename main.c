@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define UP 0
 #define DOWN 1
@@ -10,6 +11,8 @@
 
 #define BUFSIZE 256
 #define CONSTANT 128
+
+double begin = 0;
 
 typedef struct Entry {
   char *word;
@@ -188,114 +191,115 @@ Node **yield_node(Node *node) {
         if (row == 0) {
           nodes[0] = NULL;
         } else {
-          nodes[0] = (Node *)malloc(sizeof(Node));
-          nodes[0]->move = node->board[(row - 1) * node->size + column];
-          nodes[0]->size = node->size;
-          nodes[0]->board =
+          Node* tmp0 = (Node *)malloc(sizeof(Node));
+          tmp0->move = node->board[(row - 1) * node->size + column];
+          tmp0->size = node->size;
+          tmp0->board =
               (int *)malloc(sizeof(int) * node->size * node->size);
-          memcpy(nodes[0]->board, node->board,
+          memcpy(tmp0->board, node->board,
                  sizeof(int) * node->size * node->size);
-          nodes[0]->board_str = (char *)malloc(sizeof(char) * 100);
-          swap(nodes[0]->board, row * node->size + column,
+          tmp0->board_str = (char *)malloc(sizeof(char) * 100);
+          swap(tmp0->board, row * node->size + column,
                (row - 1) * node->size + column);
-          nodes[0]->parent = node;
-          int tracker = 0;
+          tmp0->parent = node;
+		  clock_t _begin = clock();
+          int pos = 0;
           for (int i = 0; i < node->size * node->size; i++) {
-            char num[100];
-            sprintf(num, "%d", nodes[0]->board[i]);
-            for (int j = 0; j < strlen(num); j++) {
-              nodes[0]->board_str[tracker++] = num[j];
-            }
+            pos += sprintf(tmp0->board_str + pos, "%d", tmp0->board[i]);
           }
-          nodes[0]->board_str[tracker] = '\0';
+          tmp0->board_str[pos] = '\0';
+		//   printf("%s\n", tmp0->board_str);
+		  begin += (double)(clock() - _begin) / CLOCKS_PER_SEC;
+		  nodes[0] = tmp0;
         }
         // Down
         if (row == node->size - 1) {
           nodes[1] = NULL;
         } else {
-          nodes[1] = (Node *)malloc(sizeof(Node));
-          nodes[1]->move = node->board[(row + 1) * node->size + column];
-          nodes[1]->size = node->size;
-          nodes[1]->board =
+          Node* tmp1 = (Node *)malloc(sizeof(Node));
+          tmp1->move = node->board[(row + 1) * node->size + column];
+          tmp1->size = node->size;
+          tmp1->board =
               (int *)malloc(sizeof(int) * node->size * node->size);
-          memcpy(nodes[1]->board, node->board,
+          memcpy(tmp1->board, node->board,
                  sizeof(int) * node->size * node->size);
-          nodes[1]->parent = node;
-          nodes[1]->board_str = (char *)malloc(sizeof(char) * 100);
-          nodes[1]->board_str[node->size * node->size] = '\0';
-          swap(nodes[1]->board, row * node->size + column,
+          tmp1->parent = node;
+          tmp1->board_str = (char *)malloc(sizeof(char) * 100);
+          tmp1->board_str[node->size * node->size] = '\0';
+          swap(tmp1->board, row * node->size + column,
                (row + 1) * node->size + column);
+			clock_t _begin = clock();
           int tracker = 0;
+          int pos = 0;
           for (int i = 0; i < node->size * node->size; i++) {
-            char num[100];
-            sprintf(num, "%d", nodes[1]->board[i]);
-            for (int j = 0; j < strlen(num); j++) {
-              nodes[1]->board_str[tracker++] = num[j];
-            }
+            pos += sprintf(tmp1->board_str + pos, "%d", tmp1->board[i]);
           }
-          nodes[1]->board_str[tracker] = '\0';
+          tmp1->board_str[pos] = '\0';
+		//   printf("%s\n", tmp1->board_str);
+		  begin += (double)(clock() - _begin) / CLOCKS_PER_SEC;
+		  nodes[1] = tmp1;
         }
         // Left
         if (column == 0) {
           nodes[2] = NULL;
         } else {
-          nodes[2] = (Node *)malloc(sizeof(Node));
-          nodes[2]->move = node->board[row * node->size + column - 1];
-          nodes[2]->size = node->size;
-          nodes[2]->board =
+          Node* tmp2 = (Node *)malloc(sizeof(Node));
+          tmp2->move = node->board[row * node->size + column - 1];
+          tmp2->size = node->size;
+          tmp2->board =
               (int *)malloc(sizeof(int) * node->size * node->size);
-          memcpy(nodes[2]->board, node->board,
+          memcpy(tmp2->board, node->board,
                  sizeof(int) * node->size * node->size);
-          nodes[2]->board_str = (char *)malloc(sizeof(char) * 100);
-          nodes[2]->board_str[node->size * node->size] = '\0';
-          swap(nodes[2]->board, row * node->size + column,
+          tmp2->board_str = (char *)malloc(sizeof(char) * 100);
+          tmp2->board_str[node->size * node->size] = '\0';
+          swap(tmp2->board, row * node->size + column,
                row * node->size + column - 1);
-          nodes[2]->parent = node;
-          int tracker = 0;
+          tmp2->parent = node;
+		  clock_t _begin = clock();
+          int pos = 0;
           for (int i = 0; i < node->size * node->size; i++) {
-            char num[2];
-            sprintf(num, "%d", nodes[2]->board[i]);
-            for (int j = 0; j < strlen(num); j++) {
-              nodes[2]->board_str[tracker++] = num[j];
-            }
+            pos += sprintf(tmp2->board_str + pos, "%d", tmp2->board[i]);
           }
-          nodes[2]->board_str[tracker] = '\0';
+          tmp2->board_str[pos] = '\0';
+		//   printf("%s\n", tmp2->board_str);
+		  begin += (double)(clock() - _begin) / CLOCKS_PER_SEC;
+		  nodes[2] = tmp2;
         }
         // Right
         if (column == node->size - 1) {
           nodes[3] = NULL;
         } else {
-          nodes[3] = (Node *)malloc(sizeof(Node));
-          nodes[3]->move = node->board[row * node->size + column + 1];
-          nodes[3]->size = node->size;
-          nodes[3]->board =
+          Node* tmp3 = (Node *)malloc(sizeof(Node));
+          tmp3->move = node->board[row * node->size + column + 1];
+          tmp3->size = node->size;
+          tmp3->board =
               (int *)malloc(sizeof(int) * node->size * node->size);
-          memcpy(nodes[3]->board, node->board,
+          memcpy(tmp3->board, node->board,
                  sizeof(int) * node->size * node->size);
-          nodes[3]->board_str = (char *)malloc(sizeof(char) * 100);
-          nodes[3]->board_str[node->size * node->size] = '\0';
-          swap(nodes[3]->board, row * node->size + column,
+          tmp3->board_str = (char *)malloc(sizeof(char) * 100);
+          tmp3->board_str[node->size * node->size] = '\0';
+          swap(tmp3->board, row * node->size + column,
                row * node->size + column + 1);
-          nodes[3]->parent = node;
-          int tracker = 0;
+          tmp3->parent = node;
+		  clock_t _begin = clock();
+		  
+          int pos = 0;
           for (int i = 0; i < node->size * node->size; i++) {
-            char num[100];
-            sprintf(num, "%d", nodes[3]->board[i]);
-            for (int j = 0; j < strlen(num); j++) {
-              nodes[3]->board_str[tracker++] = num[j];
-            }
+            pos += sprintf(tmp3->board_str + pos, "%d", tmp3->board[i]);
           }
-          nodes[3]->board_str[tracker] = '\0';
+          tmp3->board_str[pos] = '\0';
+		  begin += (double)(clock() - _begin) / CLOCKS_PER_SEC;
+		  nodes[3] = tmp3;
         }
         if (nodes[0] == NULL && nodes[1] == NULL && nodes[2] == NULL &&
             nodes[3] == NULL) {
-          free(nodes);
           return NULL;
         }
         return nodes;
       }
     }
   }
+
   free(nodes);
   return NULL;
 }
@@ -305,6 +309,9 @@ char *build_graph(Node *root) {
   enqueue(queue, root);
   insert(set2, root->board_str);
   while (!is_empty(queue)) {
+	// if (number++ > 1) {
+	// 	return NULL;
+	// }
     // printf("%d\n", number++);
     Node *node = dequeue(queue);
     if (!strcmp(node->board_str, goal)) {
@@ -335,31 +342,28 @@ char *build_graph(Node *root) {
       return result;
     }
     Node **nodes = yield_node(node);
+	// free(node->board);
+	// free(node->board_str);
+	// free(node);
     if (nodes == NULL) {
       continue;
     }
     for (int i = 0; i < 4; i++) {
       if (nodes[i] != NULL) {
-        if (is_member(set, nodes[i]->board_str)) {
-          free(nodes[i]->board);
-          free(nodes[i]->board_str);
-          free(nodes[i]);
-          continue;
-        } else {
+		// printBoard(nodes[i]->board, nodes[i]->size);
+		// printf("%s\n", nodes[i]->board_str);
           if (is_member(set2, nodes[i]->board_str)) {
-            free(nodes[i]->board);
-            free(nodes[i]->board_str);
-            free(nodes[i]);
+            // free(nodes[i]->board);
+            // free(nodes[i]->board_str);
+            // free(nodes[i]);
             continue;
           } else {
             enqueue(queue, nodes[i]);
             insert(set2, nodes[i]->board_str);
           }
-        }
       }
     }
     free(nodes);
-    insert(set, node->board_str);
   }
   return NULL;
 }
@@ -420,14 +424,19 @@ int main(int argc, char **argv) {
     char num[5];
     sprintf(num, "%d", root->board[i]);
   }
-  int N = 103;
   root->board_str[k * k] = '\0';
   root->parent = NULL;
   root->move = -1;
-  set = init(10000);
-  set2 = init(10000);
-  queue = init_queue(10000);
+  set = init(300000);
+  set2 = init(300000);
+  queue = init_queue(300000);
+  printBoard(root->board, root->size);
+  clock_t begin2 = clock();
   char *moves = build_graph(root);
+  clock_t end = clock();
+  double time_spent = (double)(end - begin2) / CLOCKS_PER_SEC;
+  printf("Time spent: %f\n", time_spent);
+  printf("Time spent yield node: %f\n", begin);
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
@@ -441,6 +450,7 @@ int main(int argc, char **argv) {
   // by one by leaving a space between moves, as below
   //  for(int i=0;i<numberOfMoves;i++)
   //  	fprintf(fp_out, "%d ", move[i]);
+
   fclose(fp_out);
 
   return 0;
