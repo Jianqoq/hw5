@@ -248,7 +248,7 @@ char *build_graph(Node *root) {
   while (!is_empty(queue)) {
     Node *node = dequeue(queue);
     if (node->board[total_size - 1] == goal[total_size - 1] &&
-        arr_equal(node->board, goal, node->size * node->size)) {
+        arr_equal(node->board, goal, total_size)) {
       Node *tmp = node;
       int length = 0;
       while (tmp != NULL) {
@@ -282,6 +282,8 @@ char *build_graph(Node *root) {
     for (int i = 0; i < 4; i++) {
       if (nodes[i] != NULL) {
         if (is_member(set2, nodes[i]->board, nodes[i]->size * nodes[i]->size)) {
+          free(nodes[i]->board);
+          free(nodes[i]);
           continue;
         } else {
           enqueue(queue, nodes[i]);
