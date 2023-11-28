@@ -79,11 +79,10 @@ Queue *init_queue(int size) {
 }
 
 size_t hash(int *arr, int arr_len, size_t size) {
-  const size_t prime = 31;
   size_t hash = 0;
 
   for (size_t i = 0; i < arr_len; i++) {
-    hash = hash * prime + (size_t)arr[i];
+    hash = (hash << 5) ^ (hash >> 27) ^ (size_t)arr[i];
   }
 
   return hash % size;
