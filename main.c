@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +16,7 @@
 double begin = 0;
 
 typedef struct Entry {
-  int *arr;
+  uint64_t hashed;
   struct Entry *next;
 } Entry;
 
@@ -24,6 +25,7 @@ typedef struct Node {
   int size;
   struct Node *parent;
   int move;
+  uint64_t hashed;
 } Node;
 
 typedef struct HashSet {
@@ -37,6 +39,14 @@ typedef struct Queue {
   int front;
   int rear;
 } Queue;
+
+uint64_t encodepuzzle(int *arr, int arr_len) {
+  uint64_t encoded = 0;
+  for (int i = 0; i < arr_len; i++) {
+	encoded |= (uint64_t)arr[i] << (60 - 4 * i);
+  }
+  return encoded;
+}
 
 void enqueue(Queue *queue, Node *node) {
   if (queue->rear == queue->size - 1) {
@@ -78,14 +88,8 @@ Queue *init_queue(int size) {
   return queue;
 }
 
-size_t hash(int *arr, int arr_len, size_t size) {
-  size_t hash = 0;
-
-  for (size_t i = 0; i < arr_len; i++) {
-    hash = (hash << 5) ^ (hash >> 27) ^ (size_t)arr[i];
-  }
-
-  return hash % size;
+size_t hash(uint64_t hashed, size_t size) {
+  return hashed % size;
 }
 
 HashSet *init(size_t size) {
@@ -98,12 +102,12 @@ HashSet *init(size_t size) {
   return set;
 }
 
-void insert(HashSet *set, int *arr, int size) {
-  size_t index = hash(arr, size, set->size);
+void insert(HashSet *set, uint64_t hashed) {
+  size_t index = hash(hashed, set->size);
   if (set->Entries[index] != NULL) {
     Entry *entry = (Entry *)malloc(sizeof(Entry));
     entry->next = NULL;
-    entry->arr = arr;
+    entry->hashed = hashed;
     Entry *next = set->Entries[index];
     while (next->next != NULL) {
       next = next->next;
@@ -111,7 +115,7 @@ void insert(HashSet *set, int *arr, int size) {
     next->next = entry;
   } else {
     Entry *entry = (Entry *)malloc(sizeof(Entry));
-    entry->arr = arr;
+    entry->hashed = hashed;
     entry->next = NULL;
     set->Entries[index] = entry;
   }
@@ -125,15 +129,15 @@ int arr_equal(int *arr1, int *arr2, int size) {
   return 1;
 }
 
-int is_member(HashSet *set, int *arr, int size) {
-  size_t index = hash(arr, size, set->size);
+int is_member(HashSet *set, uint64_t hashed) {
+  size_t index = hash(hashed, set->size);
   if (set->Entries[index] != NULL) {
-    if (arr_equal(arr, set->Entries[index]->arr, size)) {
+    if (hashed == set->Entries[index]->hashed) {
       return 1;
     } else {
       Entry *entry = set->Entries[index]->next;
       while (entry != NULL) {
-        if (arr_equal(arr, entry->arr, size))
+        if (hashed == entry->hashed)
           return 1;
         entry = entry->next;
       }
@@ -162,6 +166,7 @@ void swap(int *board, int i, int j) {
 HashSet *set2 = NULL;
 Queue *queue = NULL;
 int *goal = NULL;
+uint64_t goal_hashed = 0;
 
 Node **yield_node(Node *node) {
   Node **nodes = (Node **)malloc(sizeof(Node *) * 4);
@@ -181,6 +186,7 @@ Node **yield_node(Node *node) {
           swap(tmp0->board, row * node->size + column,
                (row - 1) * node->size + column);
           tmp0->parent = node;
+		  tmp0->hashed = encodepuzzle(tmp0->board, tmp0->size * tmp0->size);
           nodes[0] = tmp0;
         }
         // Down
@@ -196,6 +202,7 @@ Node **yield_node(Node *node) {
           tmp1->parent = node;
           swap(tmp1->board, row * node->size + column,
                (row + 1) * node->size + column);
+			   tmp1->hashed = encodepuzzle(tmp1->board, tmp1->size * tmp1->size);
           nodes[1] = tmp1;
         }
         // Left
@@ -211,6 +218,7 @@ Node **yield_node(Node *node) {
           swap(tmp2->board, row * node->size + column,
                row * node->size + column - 1);
           tmp2->parent = node;
+		  tmp2->hashed = encodepuzzle(tmp2->board, tmp2->size * tmp2->size);
           nodes[2] = tmp2;
         }
         // Right
@@ -226,10 +234,12 @@ Node **yield_node(Node *node) {
           swap(tmp3->board, row * node->size + column,
                row * node->size + column + 1);
           tmp3->parent = node;
+		  tmp3->hashed = encodepuzzle(tmp3->board, tmp3->size * tmp3->size);
           nodes[3] = tmp3;
         }
         if (nodes[0] == NULL && nodes[1] == NULL && nodes[2] == NULL &&
             nodes[3] == NULL) {
+          free(nodes);
           return NULL;
         }
         return nodes;
@@ -243,12 +253,11 @@ Node **yield_node(Node *node) {
 
 char *build_graph(Node *root) {
   enqueue(queue, root);
-  insert(set2, root->board, root->size * root->size);
+  insert(set2, root->hashed);
   int total_size = root->size * root->size;
   while (!is_empty(queue)) {
     Node *node = dequeue(queue);
-    if (node->board[total_size - 1] == goal[total_size - 1] &&
-        arr_equal(node->board, goal, total_size)) {
+    if (node->hashed == goal_hashed) {
       Node *tmp = node;
       int length = 0;
       while (tmp != NULL) {
@@ -281,13 +290,13 @@ char *build_graph(Node *root) {
     }
     for (int i = 0; i < 4; i++) {
       if (nodes[i] != NULL) {
-        if (is_member(set2, nodes[i]->board, nodes[i]->size * nodes[i]->size)) {
+        if (is_member(set2, nodes[i]->hashed)) {
           free(nodes[i]->board);
           free(nodes[i]);
           continue;
         } else {
           enqueue(queue, nodes[i]);
-          insert(set2, nodes[i]->board, nodes[i]->size * nodes[i]->size);
+          insert(set2, nodes[i]->hashed);
         }
       }
     }
@@ -338,6 +347,7 @@ int main(int argc, char **argv) {
   memcpy(root->board, initial_board, sizeof(int) * k * k);
   root->parent = NULL;
   root->move = -1;
+  root->hashed = encodepuzzle(root->board, k * k);
   set2 = init(100000);
   queue = init_queue(100000);
   goal = (int *)malloc(sizeof(int) * k * k);
@@ -345,7 +355,11 @@ int main(int argc, char **argv) {
     goal[i - 1] = i;
   }
   goal[k * k - 1] = 0;
+	  goal_hashed = encodepuzzle(goal, k * k);
+  double begin = clock();
   char *moves = build_graph(root);
+  double end = clock();
+  printf("Time: %lf\n", (end - begin) / CLOCKS_PER_SEC);
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
