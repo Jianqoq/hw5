@@ -360,11 +360,15 @@ int main(int argc, char **argv) {
         while (next != NULL) {
           Entry *tmp = next;
           next = next->next;
+          if (tmp->arr != NULL){
           free(tmp->arr);
+          }
           free(tmp);
         }
       } else {
+        if (entry->arr != NULL){
         free(entry->arr);
+      }
         free(entry);
       }
     }
