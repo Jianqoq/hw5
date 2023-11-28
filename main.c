@@ -283,6 +283,8 @@ char *build_graph(Node *root) {
     for (int i = 0; i < 4; i++) {
       if (nodes[i] != NULL) {
         if (is_member(set2, nodes[i]->board, nodes[i]->size * nodes[i]->size)) {
+          free(nodes[i]->board);
+          free(nodes[i]);
           continue;
         } else {
           enqueue(queue, nodes[i]);
@@ -352,26 +354,9 @@ int main(int argc, char **argv) {
     fprintf(fp_out, "%s\n", moves);
   else
     fprintf(fp_out, "no solution\n");
-  for (int i = 0; i < set2->size; i++) {
-    if (set2->Entries[i] != NULL) {
-      Entry *entry = set2->Entries[i];
-      if (entry->next != NULL) {
-        Entry *next = entry->next;
-        while (next != NULL) {
-          Entry *tmp = next;
-          next = next->next;
-          free(tmp);
-        }
-      } else {
-        if (entry->arr != NULL){
-        free(entry->arr);
-      }
-        free(entry);
-      }
-    }
-  }
   free(set2->Entries);
   free(set2);
+  free(goal);
   free(queue->node);
   // if it is solvable, then use something as follows:
   // probably within a loop, or however you stored proper moves, print them one
