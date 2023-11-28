@@ -424,9 +424,9 @@ int main(int argc, char **argv) {
   root->board_str[k * k] = '\0';
   root->parent = NULL;
   root->move = -1;
-  set = init(100000);
-  set2 = init(100000);
-  queue = init_queue(100000);
+  set = init(10000);
+  set2 = init(10000);
+  queue = init_queue(10000);
   char *moves = build_graph(root);
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
@@ -441,23 +441,6 @@ int main(int argc, char **argv) {
   // by one by leaving a space between moves, as below
   //  for(int i=0;i<numberOfMoves;i++)
   //  	fprintf(fp_out, "%d ", move[i]);
-
-  free(root->board);
-  free(root->board_str);
-  free(root);
-  for (int j = 0; j < set->size; j++) {
-    if (set->Entries[j] != NULL) {
-      Entry *entry = set->Entries[j];
-      while (entry != NULL) {
-        Entry *tmp = entry;
-        entry = entry->next;
-        free(tmp->word);
-        free(tmp);
-      }
-    }
-  }
-  free(set);
-  free(set2);
   fclose(fp_out);
 
   return 0;
