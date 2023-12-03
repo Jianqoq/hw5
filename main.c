@@ -333,6 +333,17 @@ int main(int argc, char **argv) {
   ////////////////////
   // do the rest to solve the puzzle
   ////////////////////
+  Node *root = (Node *)malloc(sizeof(Node));
+  root->size = k;
+  root->board = (int *)malloc(sizeof(int) * k * k);
+  memcpy(root->board, initial_board, sizeof(int) * k * k);
+  root->parent = NULL;
+  root->move = -1;
+  goal = (int *)malloc(sizeof(int) * k * k);
+  for (int i = 1; i < k * k; i++) {
+    goal[i - 1] = i;
+  }
+  goal[k * k - 1] = 0;
   char *moves = NULL;
   int solvable = 0;
   int inverse = 0;
@@ -358,17 +369,6 @@ int main(int argc, char **argv) {
       solvable = 1;
       set2 = init(100000);
       queue = init_queue(100000);
-      Node *root = (Node *)malloc(sizeof(Node));
-      root->size = k;
-      root->board = (int *)malloc(sizeof(int) * k * k);
-      memcpy(root->board, initial_board, sizeof(int) * k * k);
-      root->parent = NULL;
-      root->move = -1;
-      goal = (int *)malloc(sizeof(int) * k * k);
-      for (int i = 1; i < k * k; i++) {
-        goal[i - 1] = i;
-      }
-      goal[k * k - 1] = 0;
       moves = build_graph(root);
     }
   } else {
@@ -376,17 +376,6 @@ int main(int argc, char **argv) {
       solvable = 1;
       set2 = init(100000);
       queue = init_queue(100000);
-      Node *root = (Node *)malloc(sizeof(Node));
-      root->size = k;
-      root->board = (int *)malloc(sizeof(int) * k * k);
-      memcpy(root->board, initial_board, sizeof(int) * k * k);
-      root->parent = NULL;
-      root->move = -1;
-      goal = (int *)malloc(sizeof(int) * k * k);
-      for (int i = 1; i < k * k; i++) {
-        goal[i - 1] = i;
-      }
-      goal[k * k - 1] = 0;
       moves = build_graph(root);
     } else {
       solvable = 0;
