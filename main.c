@@ -340,7 +340,7 @@ int main(int argc, char **argv) {
   root->parent = NULL;
   root->move = -1;
   set2 = init(100000);
-  queue = init_queue(90000);
+  queue = init_queue(100000);
   goal = (int *)malloc(sizeof(int) * k * k);
   for (int i = 1; i < k * k; i++) {
     goal[i - 1] = i;
@@ -377,7 +377,7 @@ int main(int argc, char **argv) {
       solvable = 0;
     }
   }
-  char *moves = NULL;
+  char *moves = solvable ? build_graph(root) : NULL;
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
