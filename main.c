@@ -377,7 +377,7 @@ int main(int argc, char **argv) {
       solvable = 0;
     }
   }
-  char *moves = solvable ? build_graph(root) : NULL;
+  char *moves = NULL;
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
