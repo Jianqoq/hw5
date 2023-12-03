@@ -365,12 +365,10 @@ int main(int argc, char **argv) {
         }
       }
     }
-    row -= k;
-    row = -row + 1;
     if ((row + inverse) % 2 == 0) {
-      solvable = 1;
-    } else {
       solvable = 0;
+    } else {
+      solvable = 1;
     }
   } else {
     if (inverse % 2 == 0) {
@@ -379,8 +377,7 @@ int main(int argc, char **argv) {
       solvable = 0;
     }
   }
-  // printBoard(root->board, k);
-  char *moves = solvable == 1 ? build_graph(root) : NULL;
+  char *moves = solvable ? build_graph(root) : NULL;
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
