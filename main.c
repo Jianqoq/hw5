@@ -333,20 +333,7 @@ int main(int argc, char **argv) {
   ////////////////////
   // do the rest to solve the puzzle
   ////////////////////
-  Node *root = (Node *)malloc(sizeof(Node));
-  root->size = k;
-  root->board = (int *)malloc(sizeof(int) * k * k);
-  memcpy(root->board, initial_board, sizeof(int) * k * k);
-  root->parent = NULL;
-  root->move = -1;
-  set2 = init(100000);
-  queue = init_queue(100000);
-  goal = (int *)malloc(sizeof(int) * k * k);
-  for (int i = 1; i < k * k; i++) {
-    goal[i - 1] = i;
-  }
-  goal[k * k - 1] = 0;
-
+  char *moves = NULL;
   int solvable = 0;
   int inverse = 0;
   for (int i = 0; i < k * k; i++) {
@@ -369,15 +356,50 @@ int main(int argc, char **argv) {
       solvable = 0;
     } else {
       solvable = 1;
+      set2 = init(100000);
+      queue = init_queue(100000);
+      Node *root = (Node *)malloc(sizeof(Node));
+      root->size = k;
+      root->board = (int *)malloc(sizeof(int) * k * k);
+      memcpy(root->board, initial_board, sizeof(int) * k * k);
+      root->parent = NULL;
+      root->move = -1;
+      goal = (int *)malloc(sizeof(int) * k * k);
+      for (int i = 1; i < k * k; i++) {
+        goal[i - 1] = i;
+      }
+      goal[k * k - 1] = 0;
+      moves = build_graph(root);
+      free(set2->Entries);
+      free(set2);
+      free(goal);
+      free(queue->node);
     }
   } else {
     if (inverse % 2 == 0) {
       solvable = 1;
+      set2 = init(100000);
+      queue = init_queue(100000);
+      Node *root = (Node *)malloc(sizeof(Node));
+      root->size = k;
+      root->board = (int *)malloc(sizeof(int) * k * k);
+      memcpy(root->board, initial_board, sizeof(int) * k * k);
+      root->parent = NULL;
+      root->move = -1;
+      goal = (int *)malloc(sizeof(int) * k * k);
+      for (int i = 1; i < k * k; i++) {
+        goal[i - 1] = i;
+      }
+      goal[k * k - 1] = 0;
+      moves = build_graph(root);
+      free(set2->Entries);
+      free(set2);
+      free(goal);
+      free(queue->node);
     } else {
       solvable = 0;
     }
   }
-  char *moves = solvable ? build_graph(root) : NULL;
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
@@ -385,10 +407,6 @@ int main(int argc, char **argv) {
     fprintf(fp_out, "%s\n", moves);
   else
     fprintf(fp_out, "no solution\n");
-  free(set2->Entries);
-  free(set2);
-  free(goal);
-  free(queue->node);
   // if it is solvable, then use something as follows:
   // probably within a loop, or however you stored proper moves, print them one
   // by one by leaving a space between moves, as below
