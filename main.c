@@ -339,8 +339,8 @@ int main(int argc, char **argv) {
   memcpy(root->board, initial_board, sizeof(int) * k * k);
   root->parent = NULL;
   root->move = -1;
-  set2 = init(100000);
-  queue = init_queue(100000);
+  set2 = init(10000000);
+  queue = init_queue(90000);
   goal = (int *)malloc(sizeof(int) * k * k);
   for (int i = 1; i < k * k; i++) {
     goal[i - 1] = i;
