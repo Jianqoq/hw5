@@ -282,7 +282,7 @@ char *build_graph(Node *root) {
     }
     for (int i = 0; i < 4; i++) {
       if (nodes[i] != NULL) {
-        if (is_member(set2, nodes[i]->board, nodes[i]->size * nodes[i]->size)) {
+        if (is_member(set2, nodes[i]->board, root->size * root->size)) {
           free(nodes[i]->board);
           free(nodes[i]);
           continue;
@@ -346,7 +346,41 @@ int main(int argc, char **argv) {
     goal[i - 1] = i;
   }
   goal[k * k - 1] = 0;
-  char *moves = build_graph(root);
+
+  int solvable = 0;
+  int inverse = 0;
+  for (int i = 0; i < k * k; i++) {
+    for (int j = i; j < k * k; j++) {
+      if (initial_board[i] != 0 && initial_board[j] != 0 &&
+          initial_board[i] > initial_board[j])
+        inverse++;
+    }
+  }
+  if (k % 2 == 0) {
+    int row = 0;
+    for (int i = 0; i < k; i++) {
+      for (int j = 0; j < k; j++) {
+        if (initial_board[i * k + j] == 0) {
+          row = i;
+        }
+      }
+    }
+    row -= k;
+    row = -row + 1;
+    if ((row + inverse) % 2 == 0) {
+      solvable = 1;
+    } else {
+      solvable = 0;
+    }
+  } else {
+    if (inverse % 2 == 0) {
+      solvable = 1;
+    } else {
+      solvable = 0;
+    }
+  }
+  // printBoard(root->board, k);
+  char *moves = solvable == 1 ? build_graph(root) : NULL;
   // once you are done, you can use the code similar to the one below to print
   // the output into file if the puzzle is NOT solvable use something as follows
   fprintf(fp_out, "#moves\n");
